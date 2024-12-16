@@ -110,3 +110,10 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const allowedRegistrations = pgTable('allowed_registrations', {
+  id: varchar('id').primaryKey(),
+  domain: text('domain').unique(),
+  email: text('email').unique(),
+  isActive: boolean('is_active').default(true).notNull(),
+});

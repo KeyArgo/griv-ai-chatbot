@@ -15,6 +15,7 @@ import {
   type Message,
   message,
   vote,
+  allowedRegistrations,
 } from './schema';
 
 // Optionally, if not using email/pass login, you can
@@ -322,5 +323,41 @@ export async function updateChatVisiblityById({
   } catch (error) {
     console.error('Failed to update chat visibility in database');
     throw error;
+  }
+}
+
+export async function isRegistrationAllowed(email: string): Promise<boolean> {
+  try {
+    const domain = email.split('@')[1];
+    console.log('Checking registration for:', email);
+    
+    // Check for specific email
+    const [allowedEmail] = await db
+      .select()
+      .from(allowedRegistrations)
+      .where(and(
+        eq(allowedRegistrations.email, email),
+        eq(allowedRegistrations.isActive, true)
+      ));
+
+    console.log('Allowed email check result:', allowedEmail);
+
+    if (allowedEmail) return true;
+
+    // Check for domain
+    const [allowedDomain] = await db
+      .select()
+      .from(allowedRegistrations)
+      .where(and(
+        eq(allowedRegistrations.domain, domain),
+        eq(allowedRegistrations.isActive, true)
+      ));
+
+    console.log('Allowed domain check result:', allowedDomain);
+    
+    return false; // Only allow specifically listed emails/domains
+  } catch (error) {
+    console.error('Failed to check registration allowance:', error);
+    return false;
   }
 }
