@@ -17,6 +17,7 @@ import {
   vote,
   allowedRegistrations,
 } from './schema';
+import { BlockKind } from '@/components/block';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -170,11 +171,13 @@ export async function getVotesByChatId({ id }: { id: string }) {
 export async function saveDocument({
   id,
   title,
+  kind,
   content,
   userId,
 }: {
   id: string;
   title: string;
+  kind: BlockKind;
   content: string;
   userId: string;
 }) {
@@ -182,6 +185,7 @@ export async function saveDocument({
     return await db.insert(document).values({
       id,
       title,
+      kind,
       content,
       userId,
       createdAt: new Date(),
